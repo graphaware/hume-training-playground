@@ -115,6 +115,35 @@ On **Windows**, edit `C:\Windows\System32\drivers\etc\hosts` as Administrator an
 
 This is only needed if you want to authenticate to Neo4j Browser via Keycloak locally.
 
+### Trusting the Keycloak certificate in your browser
+
+Keycloak runs with a self-signed TLS certificate. If you open a **new browser profile** and the login redirect fails with a "cert authority invalid" error, the profile hasn't accepted the certificate yet.
+
+**Quick fix (any OS)** — visit the Keycloak HTTPS endpoint directly in the affected profile, accept the warning, then retry:
+
+1. Open `https://localhost:8443` in the new profile
+2. Click **Advanced** → **Proceed to localhost (unsafe)**
+3. Retry the Neo4j Browser login
+
+**Permanent fix — macOS** (trusted for all profiles):
+
+```bash
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain \
+  certs/keycloak.pem
+```
+
+Run this from the playground root directory. Restart Chrome after running it.
+
+**Permanent fix — Windows** (trusted for all profiles):
+
+1. Open `certs\keycloak.pem` in Explorer (or rename a copy to `keycloak.crt`)
+2. Double-click the file → **Install Certificate**
+3. Choose **Local Machine** → **Next**
+4. Select **Place all certificates in the following store** → **Browse** → **Trusted Root Certification Authorities** → **OK**
+5. Click **Next** → **Finish** → confirm the security prompt
+6. Restart Chrome
+
 Happy training!
 
 ## Keeping your setup up to date
